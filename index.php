@@ -147,8 +147,11 @@ function handleRegistration($link, $input) {
     $username = trim($input['username'] ?? '');
     $password = $input['password'] ?? '';
     $confirm_password = $input['confirm_password'] ?? '';
+    $phone = trim($input['phone'] ?? '');
+    $position = trim($input['position'] ?? '');
+
     
-    if(empty($full_name) || empty($email) || empty($username) || empty($password)) {
+    if(empty($full_name) || empty($email) || empty($username) || empty($password) || empty($phone) || empty($position)) {
         echo json_encode(['success' => false, 'message' => 'All fields are required']);
         return;
     }
@@ -165,6 +168,16 @@ function handleRegistration($link, $input) {
     
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['success' => false, 'message' => 'Invalid email format']);
+        return;
+    }
+
+    if($phone && !preg_match('/^\+?[0-9]{7,15}$/', $phone)) {
+        echo json_encode(['success' => false, 'message' => 'Invalid phone number format']);
+        return;
+    }
+
+    if($position && strlen($position) > 100) {
+        echo json_encode(['success' => false, 'message' => 'Position is too long']);
         return;
     }
     
@@ -200,10 +213,10 @@ function handleRegistration($link, $input) {
     
     // Hash password and insert user
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO users (full_name, email, username, password) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO users (full_name, email, username, password, phone, position) VALUES (?, ?, ?, ?, ?, ?)";
     
     if($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "ssss", $full_name, $email, $username, $hashed_password);
+        mysqli_stmt_bind_param($stmt, "ssssss", $full_name, $email, $username, $hashed_password, $phone, $position);
         
         if(mysqli_stmt_execute($stmt)) {
             echo json_encode(['success' => true, 'message' => 'Registration successful']);
@@ -764,7 +777,16 @@ mysqli_close($link);
             <label for="confirm-password">Confirm Password</label>
             <input type="password" id="confirm-password" required />
           </div>
-          <button type="submit" class="btn" style="width: 100%">Sign Up</button>
+          <div class="form-group">
+            <label for="signup-phone">Phone Number (Optional)</label>
+            <input type="tel" id="signup-phone" />
+          </div>
+          <div class="form-group">
+            <label for="signup-position">Position (Optional)</label>
+            <input type="text" id="signup-position" />
+          </div>
+         
+<button type="submit" class="btn" style="width: 100%">Sign Up</button>
         </form>
         <p style="text-align: center; margin-top: 1rem">
           Already have an account?
@@ -1192,7 +1214,9 @@ mysqli_close($link);
             email: document.getElementById('signup-email').value,
             username: document.getElementById('signup-username').value,
             password: document.getElementById('signup-password').value,
-            confirm_password: document.getElementById('confirm-password').value
+            confirm_password: document.getElementById('confirm-password').value,
+            phone: document.getElementById('signup-phone').value,
+            position: document.getElementById('signup-position').value,
         };
 
         const result = await apiCall('register', formData);
