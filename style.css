@@ -1,12 +1,12 @@
 /* Color palette */
 :root {
-  --primary-blue: #2563eb;
-  --lilac: #713dd1;
+  --primary-blue: #084D4F;
+  --lilac: #BF8464;
   --white: #ffffff;
-  --light-gray: #f5f6fa;
+  --light-gray: #F1D1AA;
   --text-dark: #22223b;
-  --pending: #ffb300;
-  --in-progress: #42a5f5;
+  --pending: #BF8464;
+  --in-progress: #084D4F;
   --resolved: #43a047;
   --danger: #ef4444;
   --success: #10b981;
@@ -80,7 +80,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #084D4F 0%, #BF8464 100%);
   padding: 2rem;
 }
 
@@ -188,18 +188,18 @@ textarea {
 }
 
 .btn:hover {
-  background: #1d4ed8;
+  background: #063a3c;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(8, 77, 79, 0.3);
 }
 
 .btn-secondary {
-  background: #6b7280;
+  background: var(--lilac);
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  background: #a67351;
+  box-shadow: 0 4px 12px rgba(191, 132, 100, 0.3);
 }
 
 .btn-success {
@@ -207,7 +207,7 @@ textarea {
 }
 
 .btn-success:hover {
-  background: #357a32;
+  background: #2e6b29;
   box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3);
 }
 
@@ -216,8 +216,8 @@ textarea {
 }
 
 .admin-btn:hover {
-  background: #9575cd;
-  box-shadow: 0 4px 12px rgba(179, 157, 219, 0.3);
+  background: #a67351;
+  box-shadow: 0 4px 12px rgba(191, 132, 100, 0.3);
 }
 
 /* Dashboard */
@@ -225,7 +225,7 @@ textarea {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, var(--light-gray) 0%, #e8d5b7 100%);
   border-radius: 12px;
 }
 
