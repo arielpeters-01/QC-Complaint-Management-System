@@ -1,12 +1,12 @@
 /* Color palette */
 :root {
-  --primary-blue: #084D4F;
-  --lilac: #BF8464;
+  --primary-blue: #084d4f;
+  --lilac: #bf8464;
   --white: #ffffff;
-  --light-gray: #F1D1AA;
+  --light-gray: #f1d1aa;
   --text-dark: #22223b;
-  --pending: #BF8464;
-  --in-progress: #084D4F;
+  --pending: #bf8464;
+  --in-progress: #084d4f;
   --resolved: #43a047;
   --danger: #ef4444;
   --success: #10b981;
@@ -22,7 +22,7 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--light-gray);
   color: var(--text-dark);
   font-size: 16px;
@@ -80,7 +80,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #084D4F 0%, #BF8464 100%);
+  background: linear-gradient(135deg, #084d4f 0%, #bf8464 100%);
   padding: 2rem;
 }
 
