@@ -452,22 +452,40 @@ function getComplaints($link, $input) {
     
     $user_id = $_SESSION['user_id'];
     $status_filter = $input['status'] ?? 'all';
+    $scope = $input['scope'] ?? 'mine'; // 'mine' or 'all'
+    // enforce scope rules: only admin may request all complaints
+    $role = $_SESSION['role'] ?? 'staff';
+    if ($scope === 'all' && $role !== 'admin') {
+        $scope = 'mine';
+    }
     
-    $sql = "SELECT c.*, u.full_name as user_name FROM complaints c 
-            JOIN users u ON c.user_id = u.id 
-            WHERE c.user_id = ?";
-    
-    if($status_filter !== 'all') {
-        $sql .= " AND c.status = ?";
+    // Build base query depending on scope
+    if ($scope === 'all') {
+        $sql = "SELECT c.*, u.full_name as user_name FROM complaints c JOIN users u ON c.user_id = u.id";
+        if($status_filter !== 'all') {
+            $sql .= " WHERE c.status = ?";
+        }
+    } else {
+        $sql = "SELECT c.*, u.full_name as user_name FROM complaints c JOIN users u ON c.user_id = u.id WHERE c.user_id = ?";
+        if($status_filter !== 'all') {
+            $sql .= " AND c.status = ?";
+        }
     }
     
     $sql .= " ORDER BY c.created_at DESC";
     
     if($stmt = mysqli_prepare($link, $sql)) {
-        if($status_filter !== 'all') {
-            mysqli_stmt_bind_param($stmt, "is", $user_id, $status_filter);
+        // bind params based on scope and filters
+        if ($scope === 'all') {
+            if($status_filter !== 'all') {
+                mysqli_stmt_bind_param($stmt, "s", $status_filter);
+            }
         } else {
-            mysqli_stmt_bind_param($stmt, "i", $user_id);
+            if($status_filter !== 'all') {
+                mysqli_stmt_bind_param($stmt, "is", $user_id, $status_filter);
+            } else {
+                mysqli_stmt_bind_param($stmt, "i", $user_id);
+            }
         }
         
         mysqli_stmt_execute($stmt);
@@ -714,15 +732,14 @@ mysqli_close($link);
   <body>
     <!-- Navigation Bar -->
     <nav class="navbar hidden" id="main-navbar">
-      <div class="logo">Voice<span style="font-size: 24px; text-decoration: none; font-weight: 700;
-">2</span>Action</div>
-      <ul class="nav-links">
-        <li><a onclick="showSection('dashboard')">Dashboard</a></li>
-        <li><a onclick="showSection('file-complaint')" id="file-complaint-nav">File Complaint</a></li>
-        <li><a onclick="showSection('complaint-list')">Complaints</a></li>
-        <li><a onclick="showSection('profile')">Profile</a></li>
-        <li><a onclick="logout()">Logout</a></li>
-      </ul>
+      <div class="logo">Voice<span style="font-size: 32px; text-decoration: none; font-weight: 700; ">2</span>Action</div>
+            <ul class="nav-links">
+                <li><a href="#" data-section="dashboard">Dashboard</a></li>
+                <li><a href="#" data-section="file-complaint" id="file-complaint-nav">File Complaint</a></li>
+                <li><a href="#" data-section="complaint-list">Complaints</a></li>
+                <li><a href="#" data-section="profile">Profile</a></li>
+                <li><a href="#" id="nav-logout">Logout</a></li>
+            </ul>
     </nav>
 
     <!-- Login Section -->
@@ -742,7 +759,7 @@ mysqli_close($link);
         </form>
         <p style="text-align: center; margin-top: 1rem">
           Don't have an account?
-          <a href="javascript:void(0)" onclick="showSection('signup')" style="color: var(--primary-blue)">Sign Up</a>
+          <a href="#" data-section="signup" style="color: var(--primary-blue)">Sign Up</a>
         </p>
         <div style="text-align: center; margin-top: 1rem; padding: 1rem;">
           
@@ -791,7 +808,7 @@ mysqli_close($link);
         </form>
         <p style="text-align: center; margin-top: 1rem">
           Already have an account?
-          <a href="javascript:void(0)" onclick="showSection('login')" style="color: var(--primary-blue)">Login</a>
+          <a href="#" data-section="login" style="color: var(--primary-blue)">Login</a>
         </p>
       </div>
     </section>
@@ -822,12 +839,12 @@ mysqli_close($link);
       <div class="dashboard-grid">
         <div class="dashboard-card">
           <h4>Quick Actions</h4>
-          <button class="btn" onclick="showSection('file-complaint')" style="margin-right: 1rem" id="quick-file-btn">
+          <button class="btn" data-section="file-complaint" style="margin-right: 1rem" id="quick-file-btn">
             File New Complaint
           </button>
-          <button class="btn btn-secondary" onclick="showSection('complaint-list')">
-            View All Complaints
-          </button>
+                    <button class="btn btn-secondary" onclick="showAllComplaints()">
+                        View All Complaints
+                    </button>
         </div>
 
         <div class="dashboard-card">
@@ -895,10 +912,10 @@ mysqli_close($link);
     <section id="complaint-list-section" class="section hidden">
       <h1>All Complaints</h1>
       <div class="filters">
-        <button class="filter-btn active" onclick="filterComplaints('all')">All</button>
-        <button class="filter-btn" onclick="filterComplaints('pending')">Pending</button>
-        <button class="filter-btn" onclick="filterComplaints('in-progress')">In Progress</button>
-        <button class="filter-btn" onclick="filterComplaints('resolved')">Resolved</button>
+    <button class="filter-btn active" data-status="all" onclick="filterComplaints(this, 'all')">All</button>
+    <button class="filter-btn" data-status="pending" onclick="filterComplaints(this, 'pending')">Pending</button>
+    <button class="filter-btn" data-status="in-progress" onclick="filterComplaints(this, 'in-progress')">In Progress</button>
+    <button class="filter-btn" data-status="resolved" onclick="filterComplaints(this, 'resolved')">Resolved</button>
       </div>
       <div id="complaint-list">Loading complaints...</div>
     </section>
@@ -918,9 +935,9 @@ mysqli_close($link);
           </button>
         </div>
       </div>
-      <button class="btn btn-secondary" onclick="showSection('complaint-list')" style="margin-top: 1rem">
-        Back to List
-      </button>
+            <button class="btn btn-secondary" onclick="goBackToList()" style="margin-top: 1rem">
+                Back to List
+            </button>
     </section>
 
     <!-- Profile Section -->
@@ -973,9 +990,8 @@ mysqli_close($link);
 
     <!-- Admin Dashboard Section -->
     <section id="admin-dashboard-section" class="section hidden">
-        <P class="new-logo">Voice<span style="font-size: 24px; text-decoration: none; font-weight: 700;
-">2</span>Action</span> </P>
-      <h1 class="admin-title">Admin Dashboard</h1>
+        <div class="logo">Voice<span style="font-size: 32px; text-decoration: none; font-weight: 700; ">2</span>Action</div>
+      <h1 class="admin-title" style="margin-top: 20px;">Admin Dashboard</h1>
 
       <ul class="admin-nav">
         <li onclick="showSection('admin-dashboard')">Dashboard</li>
@@ -1010,12 +1026,12 @@ mysqli_close($link);
     <section id="admin-complaints-section" class="section hidden">
       <h1 class="admin-title">Manage Complaints</h1>
 
-      <div class="filters">
-        <button class="filter-btn active" onclick="filterAdminComplaints('all')">All Complaints</button>
-        <button class="filter-btn" onclick="filterAdminComplaints('pending')">Pending</button>
-        <button class="filter-btn" onclick="filterAdminComplaints('in-progress')">In Progress</button>
-        <button class="filter-btn" onclick="filterAdminComplaints('resolved')">Resolved</button>
-      </div>
+            <div class="filters">
+                <button class="filter-btn active" data-status="all" onclick="filterAdminComplaints(this, 'all')">All Complaints</button>
+                <button class="filter-btn" data-status="pending" onclick="filterAdminComplaints(this, 'pending')">Pending</button>
+                <button class="filter-btn" data-status="in-progress" onclick="filterAdminComplaints(this, 'in-progress')">In Progress</button>
+                <button class="filter-btn" data-status="resolved" onclick="filterAdminComplaints(this, 'resolved')">Resolved</button>
+            </div>
 
       <div id="admin-complaint-list">Loading complaints...</div>
 
@@ -1023,6 +1039,22 @@ mysqli_close($link);
         Back to Dashboard
       </button>
     </section>
+
+        <!-- Admin Complaint Details Section -->
+        <section id="admin-complaint-details-section" class="section hidden">
+            <h1 class="admin-title">Admin - Complaint Details</h1>
+            <div id="admin-complaint-info">Loading complaint details...</div>
+            <div class="comments-section">
+                <h3>Updates / Admin Comments</h3>
+                <div id="admin-comments-list">Loading comments...</div>
+                <div class="form-group" style="margin-top: 1rem">
+                    <label for="admin-new-comment">Add a comment</label>
+                    <textarea id="admin-new-comment" placeholder="Add a comment..."></textarea>
+                    <button class="btn" onclick="addAdminComment()" style="margin-top: 0.5rem">Add Comment</button>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="goBackToList()" style="margin-top: 1rem">Back to List</button>
+        </section>
 
     <!-- Admin Users Section -->
     <section id="admin-users-section" class="section hidden">
@@ -1050,16 +1082,42 @@ mysqli_close($link);
     // Check session on page load
     document.addEventListener('DOMContentLoaded', function() {
         checkUserSession();
+
+        // Attach listeners to any element with data-section so clicks reliably call showSection
+        document.querySelectorAll('[data-section]').forEach(el => {
+            el.addEventListener('click', function(e){
+                e.preventDefault();
+                const section = el.getAttribute('data-section');
+                if (section) showSection(section);
+            });
+        });
+
+        const logoutLink = document.getElementById('nav-logout');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(e){
+                e.preventDefault();
+                logout();
+            });
+        }
     });
+
+    
 
     // Quick admin login function
     function quickAdminLogin() {
         document.getElementById('login-username').value = 'admin@qcexpress.com';
         document.getElementById('login-password').value = 'admin123';
         
-        // Optionally auto-submit
-        const event = new Event('submit');
-        document.querySelector('#login-section form').dispatchEvent(event);
+        // Submit the login form reliably
+        const form = document.querySelector('#login-section form');
+        if (form.requestSubmit) {
+            form.requestSubmit();
+        } else if (typeof form.submit === 'function') {
+            form.submit();
+        } else {
+            // fallback: dispatch a submit event
+            form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        }
     }
 
     // API call function
@@ -1067,6 +1125,7 @@ mysqli_close($link);
         try {
             const response = await fetch(window.location.href, {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -1314,13 +1373,17 @@ mysqli_close($link);
     }
 
     // Load complaints
-    async function loadComplaints(status = 'all') {
-        const result = await apiCall('get_complaints', { status: status });
+    async function loadComplaints(status = 'all', scope = 'mine') {
+        const result = await apiCall('get_complaints', { status: status, scope: scope });
         const container = document.getElementById('complaint-list');
 
+        console.log('loadComplaints result:', result);
+
         if (result.success) {
-            if (result.complaints.length === 0) {
-                container.innerHTML = '<p>No complaints found.</p>';
+            if (!result.complaints || result.complaints.length === 0) {
+                // No complaints returned for this account
+                container.innerHTML = '<p>No complaints found. If you recently submitted complaints, try refreshing or check the console (F12) for the API response.</p>';
+                console.log('No complaints for current user. API response:', result);
             } else {
                 container.innerHTML = result.complaints.map(complaint => `
                     <div class="complaint-item" onclick="viewComplaintDetails(${complaint.id})">
@@ -1335,7 +1398,30 @@ mysqli_close($link);
                 `).join('');
             }
         } else {
-            container.innerHTML = '<p>Error loading complaints.</p>';
+            // Show server error message when available
+            const message = result.message || 'Error loading complaints.';
+            if (message.toLowerCase().includes('not logged in')) {
+                // session may be lost — force user back to login
+                showMessage('Session expired. Please login again.', 'error');
+                showSection('login');
+                console.warn('API returned not logged in for loadComplaints:', result);
+                return;
+            }
+            container.innerHTML = `<p>${message}</p>`;
+            console.error('loadComplaints error:', result);
+        }
+    }
+
+    // Show all complaints (role-aware)
+    function showAllComplaints() {
+        // If admin, show admin complaints (all users). Otherwise show staff complaints (own complaints).
+        if (currentUser && currentUser.role === 'admin') {
+            showSection('admin-complaints');
+            loadAdminComplaints('all');
+        } else {
+            showSection('complaint-list');
+            // staff should request their own complaints (scope 'mine') — status 'all'
+            loadComplaints('all', 'mine');
         }
     }
 
@@ -1349,7 +1435,7 @@ mysqli_close($link);
                 container.innerHTML = '<p>No complaints found.</p>';
             } else {
                 container.innerHTML = result.complaints.map(complaint => `
-                    <div class="complaint-item admin-complaint" onclick="viewComplaintDetails(${complaint.id})">
+                    <div class="complaint-item admin-complaint" onclick="viewComplaintDetails(${complaint.id}, 'admin')">
                         <div class="complaint-header">
                             <h4>${complaint.title}</h4>
                             <span class="status ${complaint.status}">${complaint.status}</span>
@@ -1359,7 +1445,7 @@ mysqli_close($link);
                         <p><strong>Created:</strong> ${new Date(complaint.created_at).toLocaleDateString()}</p>
                         <p>${complaint.description.substring(0, 100)}...</p>
                         <div class="admin-actions">
-                            <select onchange="updateComplaintStatus(${complaint.id}, this.value)" onclick="event.stopPropagation()">
+                            <select onchange="updateComplaintStatus(${complaint.id}, this.value)" onclick="(function(e){ if(e && e.stopPropagation) e.stopPropagation(); })(event)">
                                 <option value="">Change Status</option>
                                 <option value="pending" ${complaint.status === 'pending' ? 'selected' : ''}>Pending</option>
                                 <option value="in-progress" ${complaint.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
@@ -1375,35 +1461,35 @@ mysqli_close($link);
     }
 
     // Filter complaints
-    function filterComplaints(status) {
+    function filterComplaints(btn, status) {
         // Update active filter button
-        document.querySelectorAll('#complaint-list-section .filter-btn').forEach(btn => {
-            btn.classList.remove('active');
+        document.querySelectorAll('#complaint-list-section .filter-btn').forEach(b => {
+            b.classList.remove('active');
         });
-        event.target.classList.add('active');
+        if (btn && btn.classList) btn.classList.add('active');
         
         loadComplaints(status);
     }
 
     // Filter admin complaints
-    function filterAdminComplaints(status) {
+    function filterAdminComplaints(btn, status) {
         // Update active filter button
-        document.querySelectorAll('#admin-complaints-section .filter-btn').forEach(btn => {
-            btn.classList.remove('active');
+        document.querySelectorAll('#admin-complaints-section .filter-btn').forEach(b => {
+            b.classList.remove('active');
         });
-        event.target.classList.add('active');
+        if (btn && btn.classList) btn.classList.add('active');
         
         loadAdminComplaints(status);
     }
 
     // View complaint details
-    async function viewComplaintDetails(complaintId) {
+    async function viewComplaintDetails(complaintId, context = 'staff') {
         currentComplaintId = complaintId;
         const result = await apiCall('get_complaint_details', { complaint_id: complaintId });
 
         if (result.success) {
             const complaint = result.complaint;
-            document.getElementById('complaint-info').innerHTML = `
+            const detailHtml = `
                 <div class="complaint-detail">
                     <div class="complaint-header">
                         <h3>${complaint.title}</h3>
@@ -1419,23 +1505,68 @@ mysqli_close($link);
                 </div>
             `;
 
-            // Load comments
-            const commentsContainer = document.getElementById('comments-list');
-            if (complaint.comments.length === 0) {
-                commentsContainer.innerHTML = '<p>No comments yet.</p>';
-            } else {
-                commentsContainer.innerHTML = complaint.comments.map(comment => `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <strong>${comment.author_name}</strong>
-                            <span>${new Date(comment.created_at).toLocaleDateString()}</span>
-                        </div>
-                        <p>${comment.comment}</p>
-                    </div>
-                `).join('');
-            }
+            if (context === 'admin') {
+                document.getElementById('admin-complaint-info').innerHTML = detailHtml;
 
-            showSection('complaint-details');
+                const commentsContainer = document.getElementById('admin-comments-list');
+                if (complaint.comments.length === 0) {
+                    commentsContainer.innerHTML = '<p>No comments yet.</p>';
+                } else {
+                    commentsContainer.innerHTML = complaint.comments.map(comment => `
+                        <div class="comment">
+                            <div class="comment-header">
+                                <strong>${comment.author_name}</strong>
+                                <span>${new Date(comment.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p>${comment.comment}</p>
+                        </div>
+                    `).join('');
+                }
+
+                showSection('admin-complaint-details');
+            } else {
+                document.getElementById('complaint-info').innerHTML = detailHtml;
+
+                const commentsContainer = document.getElementById('comments-list');
+                if (complaint.comments.length === 0) {
+                    commentsContainer.innerHTML = '<p>No comments yet.</p>';
+                } else {
+                    commentsContainer.innerHTML = complaint.comments.map(comment => `
+                        <div class="comment">
+                            <div class="comment-header">
+                                <strong>${comment.author_name}</strong>
+                                <span>${new Date(comment.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p>${comment.comment}</p>
+                        </div>
+                    `).join('');
+                }
+
+                showSection('complaint-details');
+            }
+        }
+    }
+
+    // Add admin comment (posts from admin complaint details)
+    async function addAdminComment() {
+        const comment = document.getElementById('admin-new-comment').value.trim();
+        if (!comment) {
+            showMessage('Please enter a comment', 'error');
+            return;
+        }
+
+        const result = await apiCall('add_comment', {
+            complaint_id: currentComplaintId,
+            comment: comment
+        });
+
+        if (result.success) {
+            showMessage('Comment added successfully!', 'success');
+            document.getElementById('admin-new-comment').value = '';
+            // reload admin complaint details
+            viewComplaintDetails(currentComplaintId, 'admin');
+        } else {
+            showMessage(result.message, 'error');
         }
     }
 
@@ -1526,6 +1657,19 @@ mysqli_close($link);
             document.querySelectorAll('form').forEach(form => form.reset());
         }
     }
+
+        // Navigate back to the correct complaints list depending on role
+        function goBackToList() {
+            if (currentUser && currentUser.role === 'admin') {
+                // show admin complaints list and reload
+                showSection('admin-complaints');
+                loadAdminComplaints();
+            } else {
+                // show staff complaint list and reload
+                showSection('complaint-list');
+                loadComplaints();
+            }
+        }
     </script>
   </body>
 </html>

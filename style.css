@@ -49,6 +49,12 @@
   /* Glass effect */
   --glass-bg: rgba(255, 255, 255, 0.25);
   --glass-border: rgba(255, 255, 255, 0.18);
+  /* central gradient for optional use via utility class */
+  --gradient-primary: linear-gradient(
+    90deg,
+    var(--primary-blue) 0%,
+    var(--lilac) 100%
+  );
 }
 
 /* Global Styles */
@@ -146,12 +152,25 @@ body::before {
 
 .logo {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
+  margin: 0;
+  padding: 0;
   letter-spacing: -0.5px;
   color: var(--white);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-style: italic;
+  width: fit-content;
+  background: linear-gradient(90deg, var(--primary-blue), var(--lilac));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .logo::after {
@@ -190,12 +209,11 @@ body::before {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--lilac);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .nav-links a::before {
-  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -329,6 +347,33 @@ h6 {
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 1rem;
+  /* headings are plain text by default; use .gradient-text to opt in */
+}
+
+/* Utility: opt-in gradient text */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Grouped gradient application for repeated selectors to avoid copy/paste of prefixed rules */
+.use-gradient,
+.use-gradient h1,
+.use-gradient h2,
+.use-gradient h3,
+.use-gradient h4,
+.use-gradient h5,
+.use-gradient h6,
+.use-gradient .status-number,
+.use-gradient .dashboard-title,
+.use-gradient .complaint-title,
+.use-gradient .comment-author,
+.use-gradient .dashboard-card h4,
+.use-gradient .status-card h3,
+.use-gradient .filter-btn::before,
+.use-gradient .comment-item::before {
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -362,7 +407,11 @@ p {
 }
 
 .admin-title {
-  color: var(--lilac) !important;
+  -webkit-text-fill-color: var(--lilac);
+  background: none;
+  background-image: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
 }
 
 /* Forms */
@@ -588,10 +637,6 @@ textarea {
   font-size: 4rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-shadow: none;
   animation: numberPulse 2s ease-in-out infinite;
 }
@@ -621,9 +666,6 @@ textarea {
 
 .status-card.pending h3 {
   background: linear-gradient(135deg, var(--pending), #fbbf24);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .status-card.in-progress {
@@ -690,10 +732,6 @@ textarea {
 }
 
 .dashboard-card h4 {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   font-weight: 700;
@@ -767,10 +805,6 @@ textarea {
 
 .complaint-title {
   font-weight: 700;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin: 0 0 0.5rem 0;
   font-size: 1.4rem;
   line-height: 1.3;
@@ -936,10 +970,6 @@ textarea {
 
 .comment-author {
   font-weight: 700;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
 }
@@ -1007,6 +1037,11 @@ textarea {
 
 .admin-card h3 {
   color: var(--white);
+  -webkit-text-fill-color: var(--white);
+  background: none;
+  background-image: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
   font-size: 3rem;
   margin-bottom: 0.5rem;
   font-weight: bold;
