@@ -712,116 +712,18 @@ mysqli_close($link);
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar hidden" id="main-sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <div class="logo-icon">📋</div>
-          <div class="logo-text">
-            <div class="logo-title">QC Express</div>
-            <div class="logo-subtitle">Complaints</div>
-          </div>
-        </div>
-      </div>
-      
-      <nav class="sidebar-nav">
-        <ul class="nav-menu">
-          <li class="nav-item active" data-section="dashboard">
-            <a onclick="showSection('dashboard')" class="nav-link">
-              <span class="nav-icon">📊</span>
-              <span class="nav-text">Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item" data-section="file-complaint">
-            <a onclick="showSection('file-complaint')" class="nav-link">
-              <span class="nav-icon">📝</span>
-              <span class="nav-text">File Complaint</span>
-            </a>
-          </li>
-          <li class="nav-item" data-section="complaint-list">
-            <a onclick="showSection('complaint-list')" class="nav-link">
-              <span class="nav-icon">📋</span>
-              <span class="nav-text">My Complaints</span>
-            </a>
-          </li>
-          <li class="nav-item" data-section="profile">
-            <a onclick="showSection('profile')" class="nav-link">
-              <span class="nav-icon">👤</span>
-              <span class="nav-text">Profile</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar">
-            <span id="user-initials">U</span>
-          </div>
-          <div class="user-details">
-            <div class="user-name" id="sidebar-user-name">User</div>
-            <div class="user-role" id="sidebar-user-role">Staff</div>
-          </div>
-        </div>
-        <button class="logout-btn" onclick="logout()" title="Logout">
-          <span class="logout-icon">🚪</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- Admin Sidebar -->
-    <aside class="sidebar admin-sidebar hidden" id="admin-sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <div class="logo-icon">🛡️</div>
-          <div class="logo-text">
-            <div class="logo-title">Admin Panel</div>
-            <div class="logo-subtitle">QC Express</div>
-          </div>
-        </div>
-      </div>
-      
-      <nav class="sidebar-nav">
-        <ul class="nav-menu">
-          <li class="nav-item active" data-section="admin-dashboard">
-            <a onclick="showSection('admin-dashboard')" class="nav-link">
-              <span class="nav-icon">📊</span>
-              <span class="nav-text">Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item" data-section="admin-complaints">
-            <a onclick="showSection('admin-complaints')" class="nav-link">
-              <span class="nav-icon">📋</span>
-              <span class="nav-text">All Complaints</span>
-            </a>
-          </li>
-          <li class="nav-item" data-section="admin-users">
-            <a onclick="showSection('admin-users')" class="nav-link">
-              <span class="nav-icon">👥</span>
-              <span class="nav-text">Manage Users</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar admin">
-            <span id="admin-initials">A</span>
-          </div>
-          <div class="user-details">
-            <div class="user-name" id="admin-sidebar-name">Administrator</div>
-            <div class="user-role">Admin</div>
-          </div>
-        </div>
-        <button class="logout-btn" onclick="logout()" title="Logout">
-          <span class="logout-icon">🚪</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content hidden" id="main-content">
+    <!-- Navigation Bar -->
+    <nav class="navbar hidden" id="main-navbar">
+      <div class="logo">Voice<span style="font-size: 24px; text-decoration: none; font-weight: 700;
+">2</span>Action</div>
+      <ul class="nav-links">
+        <li><a onclick="showSection('dashboard')">Dashboard</a></li>
+        <li><a onclick="showSection('file-complaint')" id="file-complaint-nav">File Complaint</a></li>
+        <li><a onclick="showSection('complaint-list')">Complaints</a></li>
+        <li><a onclick="showSection('profile')">Profile</a></li>
+        <li><a onclick="logout()">Logout</a></li>
+      </ul>
+    </nav>
 
     <!-- Login Section -->
     <section id="login-section" class="auth-section">
@@ -894,775 +796,250 @@ mysqli_close($link);
       </div>
     </section>
 
-      <!-- Dashboard Section -->
-      <section id="dashboard-section" class="content-section hidden">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Dashboard</h1>
-            <p>Welcome back, <span id="user-name">Staff Member</span>! Here's your complaint overview.</p>
-          </div>
-          <div class="page-actions">
-            <button class="btn btn-primary" onclick="showSection('file-complaint')">
-              <span class="btn-icon">➕</span>
-              New Complaint
-            </button>
-          </div>
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" class="section hidden">
+      <h1>Dashboard</h1>
+      <div class="dashboard-welcome">
+        <h3>Welcome back, <span id="user-name">Staff Member</span>!</h3>
+        <p>Here's an overview of your complaint activity and company updates.</p>
+      </div>
+
+      <div class="status-cards">
+        <div class="status-card pending">
+          <h3 id="pending-count">0</h3>
+          <p>Pending</p>
+        </div>
+        <div class="status-card in-progress">
+          <h3 id="progress-count">0</h3>
+          <p>In Progress</p>
+        </div>
+        <div class="status-card resolved">
+          <h3 id="resolved-count">0</h3>
+          <p>Resolved</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h4>Quick Actions</h4>
+          <button class="btn" onclick="showSection('file-complaint')" style="margin-right: 1rem" id="quick-file-btn">
+            File New Complaint
+          </button>
+          <button class="btn btn-secondary" onclick="showSection('complaint-list')">
+            View All Complaints
+          </button>
         </div>
 
-        <div class="stats-grid">
-          <div class="stat-card pending">
-            <div class="stat-icon">⏳</div>
-            <div class="stat-content">
-              <div class="stat-number" id="pending-count">0</div>
-              <div class="stat-label">Pending</div>
-            </div>
-          </div>
-          <div class="stat-card in-progress">
-            <div class="stat-icon">🔄</div>
-            <div class="stat-content">
-              <div class="stat-number" id="progress-count">0</div>
-              <div class="stat-label">In Progress</div>
-            </div>
-          </div>
-          <div class="stat-card resolved">
-            <div class="stat-icon">✅</div>
-            <div class="stat-content">
-              <div class="stat-number" id="resolved-count">0</div>
-              <div class="stat-label">Resolved</div>
-            </div>
-          </div>
-          <div class="stat-card total">
-            <div class="stat-icon">📊</div>
-            <div class="stat-content">
-              <div class="stat-number" id="total-complaints">0</div>
-              <div class="stat-label">Total</div>
-            </div>
-          </div>
+        <div class="dashboard-card">
+          <h4>Summary Statistics</h4>
+          <ul style="list-style: none; padding: 0">
+            <li>Total Complaints: <strong id="total-complaints">0</strong></li>
+            <li>Recent Activity: <strong id="recent-activity">Loading...</strong></li>
+            <li>Account Type: <strong id="user-role">Staff</strong></li>
+          </ul>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h3>Recent Complaints</h3>
-              <a onclick="showSection('complaint-list')" class="view-all">View All</a>
-            </div>
-            <div class="card-content">
-              <div id="recent-complaints">Loading recent complaints...</div>
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h3>Quick Actions</h3>
-            </div>
-            <div class="card-content">
-              <div class="quick-actions">
-                <button class="quick-action-btn" onclick="showSection('file-complaint')">
-                  <div class="quick-action-icon">📝</div>
-                  <div class="quick-action-text">File Complaint</div>
-                </button>
-                <button class="quick-action-btn" onclick="showSection('complaint-list')">
-                  <div class="quick-action-icon">📋</div>
-                  <div class="quick-action-text">View Complaints</div>
-                </button>
-                <button class="quick-action-btn" onclick="showSection('profile')">
-                  <div class="quick-action-icon">👤</div>
-                  <div class="quick-action-text">Update Profile</div>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h3>System Updates</h3>
-            </div>
-            <div class="card-content">
-              <div class="updates-list">
-                <div class="update-item">
-                  <div class="update-icon">⚠️</div>
-                  <div class="update-text">System maintenance scheduled for Friday 8pm</div>
-                </div>
-                <div class="update-item">
-                  <div class="update-icon">🆕</div>
-                  <div class="update-text">New complaint category added: Technical</div>
-                </div>
-                <div class="update-item">
-                  <div class="update-icon">✨</div>
-                  <div class="update-text">Resolved complaints now show resolution time</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h3>Account Information</h3>
-            </div>
-            <div class="card-content">
-              <div class="account-info">
-                <div class="info-item">
-                  <span class="info-label">Account Type:</span>
-                  <span class="info-value" id="user-role">Staff</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Member Since:</span>
-                  <span class="info-value" id="member-since">Loading...</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Last Login:</span>
-                  <span class="info-value" id="last-login">Just now</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="dashboard-card">
+          <h4>Notifications</h4>
+          <ul style="list-style: none; padding: 0; font-size: 14px">
+            <li>• System maintenance scheduled for Friday 8pm</li>
+            <li>• New complaint category added: Technical</li>
+            <li>• Resolved complaints now show resolution time</li>
+          </ul>
         </div>
-      </section>
+      </div>
 
-      <!-- File Complaint Section -->
-      <section id="file-complaint-section" class="content-section hidden">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>File New Complaint</h1>
-            <p>Describe your issue in detail and we'll help resolve it quickly.</p>
+      <div class="dashboard-card">
+        <h4>Recent Complaints</h4>
+        <div id="recent-complaints">Loading recent complaints...</div>
+      </div>
+    </section>
+
+    <!-- File Complaint Section -->
+    <section id="file-complaint-section" class="section hidden">
+      <h1>File New Complaint</h1>
+      <div class="form-container">
+        <form onsubmit="handleComplaintSubmission(event)">
+          <div class="form-group">
+            <label for="complaint-title">Complaint Title</label>
+            <input type="text" id="complaint-title" required />
           </div>
+          <div class="form-group">
+            <label for="complaint-category">Category</label>
+            <select id="complaint-category" required>
+              <option value="">Select Category</option>
+              <option value="Delivery">Delivery</option>
+              <option value="Services">Services</option>
+              <option value="Technical">Technical</option>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="complaint-description">Description</label>
+            <textarea
+              id="complaint-description"
+              required
+              placeholder="Please describe your complaint in detail..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="complaint-attachment">Attach Image (Optional)</label>
+            <input type="file" id="complaint-attachment" accept="image/*" />
+          </div>
+          <button type="submit" class="btn">Submit Complaint</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Complaint List Section -->
+    <section id="complaint-list-section" class="section hidden">
+      <h1>All Complaints</h1>
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterComplaints('all')">All</button>
+        <button class="filter-btn" onclick="filterComplaints('pending')">Pending</button>
+        <button class="filter-btn" onclick="filterComplaints('in-progress')">In Progress</button>
+        <button class="filter-btn" onclick="filterComplaints('resolved')">Resolved</button>
+      </div>
+      <div id="complaint-list">Loading complaints...</div>
+    </section>
+
+    <!-- Complaint Details Section -->
+    <section id="complaint-details-section" class="section hidden">
+      <h1>Complaint Details</h1>
+      <div id="complaint-info">Loading complaint details...</div>
+      <div class="comments-section">
+        <h3>Updates / Comments</h3>
+        <div id="comments-list">Loading comments...</div>
+        <div class="form-group" style="margin-top: 1rem">
+          <label for="new-comment">Add a comment</label>
+          <textarea id="new-comment" placeholder="Add a comment..."></textarea>
+          <button class="btn" onclick="addComplaintComment()" style="margin-top: 0.5rem">
+            Add Comment
+          </button>
         </div>
+      </div>
+      <button class="btn btn-secondary" onclick="showSection('complaint-list')" style="margin-top: 1rem">
+        Back to List
+      </button>
+    </section>
 
-        <div class="form-container">
-          <div class="complaint-form-card">
-            <form onsubmit="handleComplaintSubmission(event)">
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="complaint-title">
-                    <span class="label-icon">📝</span>
-                    Complaint Title
-                  </label>
-                  <input 
-                    type="text" 
-                    id="complaint-title" 
-                    required 
-                    placeholder="Brief summary of your issue"
-                    class="form-input"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="complaint-category">
-                    <span class="label-icon">📂</span>
-                    Category
-                  </label>
-                  <select id="complaint-category" required class="form-select">
-                    <option value="">Select Category</option>
-                    <option value="Delivery">🚚 Delivery Issues</option>
-                    <option value="Services">🔧 Service Problems</option>
-                    <option value="Technical">💻 Technical Issues</option>
-                    <option value="Maintenance">🛠️ Maintenance</option>
-                    <option value="Billing">💰 Billing & Payment</option>
-                    <option value="Other">📋 Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="complaint-description">
-                  <span class="label-icon">📄</span>
-                  Detailed Description
-                </label>
-                <textarea
-                  id="complaint-description"
-                  required
-                  placeholder="Please provide a detailed description of your complaint. Include what happened, when it occurred, and any steps you've already taken to resolve it."
-                  class="form-textarea"
-                  rows="6"
-                ></textarea>
-                <div class="char-counter">
-                  <span id="char-count">0</span> / 1000 characters
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="complaint-attachment">
-                  <span class="label-icon">📎</span>
-                  Attach Supporting Files (Optional)
-                </label>
-                <div class="file-upload-area" onclick="document.getElementById('complaint-attachment').click()">
-                  <div class="file-upload-content">
-                    <div class="file-upload-icon">📁</div>
-                    <div class="file-upload-text">
-                      <strong>Click to browse</strong> or drag and drop
-                    </div>
-                    <div class="file-upload-hint">Images only (JPG, PNG, GIF) - Max 5MB</div>
-                  </div>
-                  <input type="file" id="complaint-attachment" accept="image/*" style="display: none;" />
-                </div>
-                <div id="file-preview" class="file-preview hidden"></div>
-              </div>
-
-              <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="showSection('dashboard')">
-                  Cancel
-                </button>
-                <button type="submit" class="btn btn-primary">
-                  <span class="btn-icon">📤</span>
-                  Submit Complaint
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <div class="tips-card">
-            <h3>💡 Tips for Better Resolution</h3>
-            <ul class="tips-list">
-              <li>Be specific about the issue and when it occurred</li>
-              <li>Include relevant details like order numbers or service IDs</li>
-              <li>Attach screenshots or photos if applicable</li>
-              <li>Mention any previous contact or reference numbers</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- Complaint List Section -->
-      <section id="complaint-list-section" class="content-section hidden">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>My Complaints</h1>
-            <p>Track and manage all your submitted complaints</p>
-          </div>
-          <div class="page-actions">
-            <button class="btn btn-primary" onclick="showSection('file-complaint')">
-              <span class="btn-icon">➕</span>
-              New Complaint
-            </button>
-          </div>
+    <!-- Profile Section -->
+    <section id="profile-section" class="section hidden">
+      <h1>Profile</h1>
+      <div class="form-container">
+        <div style="text-align: center; margin-bottom: 2rem">
+          <img
+            id="profile-image"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e5e7eb'/%3E%3Ctext x='50' y='55' text-anchor='middle' font-size='30' fill='%23374151'%3E👤%3C/text%3E%3C/svg%3E"
+            alt="Profile"
+            class="profile-pic"
+          />
+          <br />
+          <input type="file" id="profile-pic-input" accept="image/*" style="display: none" />
+          <button
+            class="btn btn-secondary"
+            onclick="document.getElementById('profile-pic-input').click()"
+            style="margin-top: 1rem"
+          >
+            Change Photo
+          </button>
         </div>
 
-        <div class="filters-section">
-          <div class="filter-tabs">
-            <button class="filter-tab active" onclick="filterComplaints('all')" data-filter="all">
-              <span class="filter-icon">📋</span>
-              All
-              <span class="filter-count" id="all-count">0</span>
-            </button>
-            <button class="filter-tab" onclick="filterComplaints('pending')" data-filter="pending">
-              <span class="filter-icon">⏳</span>
-              Pending
-              <span class="filter-count" id="pending-filter-count">0</span>
-            </button>
-            <button class="filter-tab" onclick="filterComplaints('in-progress')" data-filter="in-progress">
-              <span class="filter-icon">🔄</span>
-              In Progress
-              <span class="filter-count" id="progress-filter-count">0</span>
-            </button>
-            <button class="filter-tab" onclick="filterComplaints('resolved')" data-filter="resolved">
-              <span class="filter-icon">✅</span>
-              Resolved
-              <span class="filter-count" id="resolved-filter-count">0</span>
-            </button>
+        <form onsubmit="handleProfileUpdate(event)">
+          <div class="form-group">
+            <label for="profile-name">Full Name</label>
+            <input type="text" id="profile-name" />
           </div>
-          
-          <div class="search-box">
-            <input type="text" id="complaint-search" placeholder="Search complaints..." class="search-input">
-            <span class="search-icon">🔍</span>
+          <div class="form-group">
+            <label for="profile-email">Email</label>
+            <input type="email" id="profile-email" />
           </div>
-        </div>
-
-        <div class="complaints-container">
-          <div id="complaint-list" class="complaints-grid">
-            <div class="loading-state">
-              <div class="loading-spinner"></div>
-              <p>Loading complaints...</p>
-            </div>
+          <div class="form-group">
+            <label for="profile-username">Username</label>
+            <input type="text" id="profile-username" />
           </div>
-          
-          <div id="empty-state" class="empty-state hidden">
-            <div class="empty-icon">📭</div>
-            <h3>No complaints found</h3>
-            <p>You haven't submitted any complaints yet.</p>
-            <button class="btn btn-primary" onclick="showSection('file-complaint')">
-              File Your First Complaint
-            </button>
+          <div class="form-group">
+            <label for="profile-phone">Phone Number</label>
+            <input type="tel" id="profile-phone" />
           </div>
-        </div>
-      </section>
-
-      <!-- Complaint Details Section -->
-      <section id="complaint-details-section" class="content-section hidden">
-        <div class="page-header">
-          <div class="page-title">
-            <button class="back-btn" onclick="showSection('complaint-list')">
-              <span class="back-icon">←</span>
-            </button>
-            <div>
-              <h1>Complaint Details</h1>
-              <p>View and track your complaint progress</p>
-            </div>
+          <div class="form-group">
+            <label for="profile-position">Position</label>
+            <input type="text" id="profile-position" />
           </div>
-        </div>
-
-        <div class="complaint-details-container">
-          <div class="complaint-info-card">
-            <div id="complaint-info" class="complaint-info">
-              <div class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>Loading complaint details...</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="comments-section">
-            <div class="comments-header">
-              <h3>
-                <span class="section-icon">💬</span>
-                Updates & Comments
-              </h3>
-            </div>
-            
-            <div class="comments-list" id="comments-list">
-              <div class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>Loading comments...</p>
-              </div>
-            </div>
-
-            <div class="add-comment-section">
-              <div class="comment-form">
-                <textarea 
-                  id="new-comment" 
-                  placeholder="Add a comment or update..."
-                  class="comment-input"
-                  rows="3"
-                ></textarea>
-                <div class="comment-actions">
-                  <div class="comment-tips">
-                    💡 Tip: Provide additional details or ask for updates
-                  </div>
-                  <button class="btn btn-primary" onclick="addComplaintComment()">
-                    <span class="btn-icon">💬</span>
-                    Add Comment
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Profile Section -->
-      <section id="profile-section" class="content-section hidden">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Profile Settings</h1>
-            <p>Manage your account information and preferences</p>
-          </div>
-        </div>
-
-        <div class="profile-container">
-          <div class="profile-sidebar">
-            <div class="profile-avatar-section">
-              <div class="profile-avatar">
-                <img
-                  id="profile-image"
-                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='60' fill='%23667eea'/%3E%3Ctext x='60' y='70' text-anchor='middle' font-size='36' fill='white'%3E👤%3C/text%3E%3C/svg%3E"
-                  alt="Profile"
-                  class="avatar-img"
-                />
-                <button class="avatar-edit-btn" onclick="document.getElementById('profile-pic-input').click()">
-                  <span class="edit-icon">✏️</span>
-                </button>
-              </div>
-              <input type="file" id="profile-pic-input" accept="image/*" style="display: none" />
-              
-              <div class="profile-stats">
-                <div class="profile-stat">
-                  <div class="stat-number" id="profile-total-complaints">0</div>
-                  <div class="stat-label">Total Complaints</div>
-                </div>
-                <div class="profile-stat">
-                  <div class="stat-number" id="profile-resolved-complaints">0</div>
-                  <div class="stat-label">Resolved</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="profile-info-summary">
-              <h4>Account Information</h4>
-              <div class="info-item">
-                <span class="info-icon">📧</span>
-                <span class="info-text" id="profile-email-display">Loading...</span>
-              </div>
-              <div class="info-item">
-                <span class="info-icon">📱</span>
-                <span class="info-text" id="profile-phone-display">Not provided</span>
-              </div>
-              <div class="info-item">
-                <span class="info-icon">💼</span>
-                <span class="info-text" id="profile-position-display">Not provided</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-main">
-            <div class="profile-form-card">
-              <form onsubmit="handleProfileUpdate(event)">
-                <div class="form-section">
-                  <h3>Personal Information</h3>
-                  
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="profile-name">
-                        <span class="label-icon">👤</span>
-                        Full Name
-                      </label>
-                      <input type="text" id="profile-name" class="form-input" />
-                    </div>
-                    <div class="form-group">
-                      <label for="profile-username">
-                        <span class="label-icon">🏷️</span>
-                        Username
-                      </label>
-                      <input type="text" id="profile-username" class="form-input" />
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="profile-email">
-                      <span class="label-icon">📧</span>
-                      Email Address
-                    </label>
-                    <input type="email" id="profile-email" class="form-input" />
-                  </div>
-                </div>
-
-                <div class="form-section">
-                  <h3>Contact & Work Information</h3>
-                  
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="profile-phone">
-                        <span class="label-icon">📱</span>
-                        Phone Number
-                      </label>
-                      <input type="tel" id="profile-phone" class="form-input" placeholder="+1 (555) 123-4567" />
-                    </div>
-                    <div class="form-group">
-                      <label for="profile-position">
-                        <span class="label-icon">💼</span>
-                        Position/Department
-                      </label>
-                      <input type="text" id="profile-position" class="form-input" placeholder="e.g., Customer Service, IT Support" />
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-actions">
-                  <button type="button" class="btn btn-secondary" onclick="loadProfile()">
-                    Reset Changes
-                  </button>
-                  <button type="submit" class="btn btn-primary">
-                    <span class="btn-icon">💾</span>
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="profile-security-card">
-              <h3>Security Settings</h3>
-              <p>Manage your account security and password</p>
-              <button class="btn btn-outline" onclick="alert('Password change feature coming soon!')">
-                <span class="btn-icon">🔐</span>
-                Change Password
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </main>
+          <button type="submit" class="btn">Save Changes</button>
+        </form>
+      </div>
+    </section>
 
     <!-- Admin Dashboard Section -->
-    <section id="admin-dashboard-section" class="content-section admin-section hidden">
-      <div class="page-header">
-        <div class="page-title">
-          <h1>Admin Dashboard</h1>
-          <p>System overview and complaint management</p>
+    <section id="admin-dashboard-section" class="section hidden">
+        <P class="new-logo">Voice<span style="font-size: 24px; text-decoration: none; font-weight: 700;
+">2</span>Action</span> </P>
+      <h1 class="admin-title">Admin Dashboard</h1>
+
+      <ul class="admin-nav">
+        <li onclick="showSection('admin-dashboard')">Dashboard</li>
+        <li onclick="showSection('admin-complaints')">Manage Complaints</li>
+        <li onclick="showSection('admin-users')">Manage Users</li>
+        <li onclick="logout()">Logout</li>
+      </ul>
+
+      <div class="admin-cards">
+        <div class="admin-card">
+          <h3 id="admin-total-count">0</h3>
+          <p>Total Complaints</p>
         </div>
-        <div class="admin-badge">
-          <span class="badge-icon">👑</span>
-          Administrator
+        <div class="admin-card">
+          <h3 id="admin-pending-count">0</h3>
+          <p>Pending</p>
+        </div>
+        <div class="admin-card">
+          <h3 id="admin-progress-count">0</h3>
+          <p>In Progress</p>
+        </div>
+        <div class="admin-card">
+          <h3 id="admin-resolved-count">0</h3>
+          <p>Resolved</p>
         </div>
       </div>
 
-      <div class="admin-stats-grid">
-        <div class="admin-stat-card total">
-          <div class="stat-icon">📊</div>
-          <div class="stat-content">
-            <div class="stat-number" id="admin-total-count">0</div>
-            <div class="stat-label">Total Complaints</div>
-            <div class="stat-trend">↗️ All time</div>
-          </div>
-        </div>
-        <div class="admin-stat-card pending">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-content">
-            <div class="stat-number" id="admin-pending-count">0</div>
-            <div class="stat-label">Pending Review</div>
-            <div class="stat-trend">🔴 Needs attention</div>
-          </div>
-        </div>
-        <div class="admin-stat-card in-progress">
-          <div class="stat-icon">🔄</div>
-          <div class="stat-content">
-            <div class="stat-number" id="admin-progress-count">0</div>
-            <div class="stat-label">In Progress</div>
-            <div class="stat-trend">🟡 Being handled</div>
-          </div>
-        </div>
-        <div class="admin-stat-card resolved">
-          <div class="stat-icon">✅</div>
-          <div class="stat-content">
-            <div class="stat-number" id="admin-resolved-count">0</div>
-            <div class="stat-label">Resolved</div>
-            <div class="stat-trend">🟢 Completed</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-dashboard-grid">
-        <div class="admin-card">
-          <div class="card-header">
-            <h3>Recent Activity</h3>
-            <a onclick="showSection('admin-complaints')" class="view-all">View All</a>
-          </div>
-          <div class="card-content">
-            <div id="admin-recent-activity">Loading recent activity...</div>
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <div class="card-header">
-            <h3>System Status</h3>
-          </div>
-          <div class="card-content">
-            <div class="system-status">
-              <div class="status-item">
-                <span class="status-icon">🟢</span>
-                <span class="status-text">System Online</span>
-                <span class="status-value">99.9%</span>
-              </div>
-              <div class="status-item">
-                <span class="status-icon">👥</span>
-                <span class="status-text">Active Users</span>
-                <span class="status-value" id="active-users">0</span>
-              </div>
-              <div class="status-item">
-                <span class="status-icon">📈</span>
-                <span class="status-text">Resolution Rate</span>
-                <span class="status-value">94%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <div class="card-header">
-            <h3>Quick Actions</h3>
-          </div>
-          <div class="card-content">
-            <div class="admin-quick-actions">
-              <button class="admin-action-btn" onclick="showSection('admin-complaints')">
-                <div class="action-icon">📋</div>
-                <div class="action-text">Manage Complaints</div>
-              </button>
-              <button class="admin-action-btn" onclick="showSection('admin-users')">
-                <div class="action-icon">👥</div>
-                <div class="action-text">User Management</div>
-              </button>
-              <button class="admin-action-btn" onclick="generateReport()">
-                <div class="action-icon">📊</div>
-                <div class="action-text">Generate Report</div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="notification-badge">🔔 Welcome Administrator</div>
     </section>
 
     <!-- Admin Complaints Section -->
-    <section id="admin-complaints-section" class="content-section admin-section hidden">
-      <div class="page-header">
-        <div class="page-title">
-          <h1>Manage Complaints</h1>
-          <p>Review, update, and resolve all system complaints</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-outline" onclick="exportComplaints()">
-            <span class="btn-icon">📊</span>
-            Export Data
-          </button>
-        </div>
+    <section id="admin-complaints-section" class="section hidden">
+      <h1 class="admin-title">Manage Complaints</h1>
+
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterAdminComplaints('all')">All Complaints</button>
+        <button class="filter-btn" onclick="filterAdminComplaints('pending')">Pending</button>
+        <button class="filter-btn" onclick="filterAdminComplaints('in-progress')">In Progress</button>
+        <button class="filter-btn" onclick="filterAdminComplaints('resolved')">Resolved</button>
       </div>
 
-      <div class="admin-filters-section">
-        <div class="filter-tabs">
-          <button class="filter-tab active" onclick="filterAdminComplaints('all')" data-filter="all">
-            <span class="filter-icon">📋</span>
-            All Complaints
-            <span class="filter-count" id="admin-all-count">0</span>
-          </button>
-          <button class="filter-tab" onclick="filterAdminComplaints('pending')" data-filter="pending">
-            <span class="filter-icon">⏳</span>
-            Pending
-            <span class="filter-count" id="admin-pending-filter-count">0</span>
-          </button>
-          <button class="filter-tab" onclick="filterAdminComplaints('in-progress')" data-filter="in-progress">
-            <span class="filter-icon">🔄</span>
-            In Progress
-            <span class="filter-count" id="admin-progress-filter-count">0</span>
-          </button>
-          <button class="filter-tab" onclick="filterAdminComplaints('resolved')" data-filter="resolved">
-            <span class="filter-icon">✅</span>
-            Resolved
-            <span class="filter-count" id="admin-resolved-filter-count">0</span>
-          </button>
-        </div>
-        
-        <div class="admin-search-controls">
-          <div class="search-box">
-            <input type="text" id="admin-complaint-search" placeholder="Search complaints..." class="search-input">
-            <span class="search-icon">🔍</span>
-          </div>
-          <select class="sort-select" id="admin-sort-select">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="priority">By Priority</option>
-            <option value="category">By Category</option>
-          </select>
-        </div>
-      </div>
+      <div id="admin-complaint-list">Loading complaints...</div>
 
-      <div class="admin-complaints-container">
-        <div id="admin-complaint-list" class="admin-complaints-table">
-          <div class="loading-state">
-            <div class="loading-spinner"></div>
-            <p>Loading complaints...</p>
-          </div>
-        </div>
-        
-        <div id="admin-empty-state" class="empty-state hidden">
-          <div class="empty-icon">📭</div>
-          <h3>No complaints found</h3>
-          <p>No complaints match your current filters.</p>
-        </div>
-      </div>
+      <button class="btn btn-secondary" onclick="showSection('admin-dashboard')" style="margin-top: 1rem">
+        Back to Dashboard
+      </button>
     </section>
 
     <!-- Admin Users Section -->
-    <section id="admin-users-section" class="content-section admin-section hidden">
-      <div class="page-header">
-        <div class="page-title">
-          <h1>User Management</h1>
-          <p>Manage user accounts and permissions</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-primary" onclick="alert('Add user feature coming soon!')">
-            <span class="btn-icon">➕</span>
-            Add User
-          </button>
-        </div>
+    <section id="admin-users-section" class="section hidden">
+      <h1 class="admin-title">Manage Users</h1>
+      <div class="dashboard-card">
+        <h4>User Management</h4>
+        <p>User management functionality coming soon...</p>
+        <ul style="list-style: none; padding: 0">
+          <li>• View all registered users</li>
+          <li>• Edit user permissions</li>
+          <li>• Deactivate/activate accounts</li>
+          <li>• Generate user reports</li>
+        </ul>
       </div>
-
-      <div class="user-management-grid">
-        <div class="admin-card">
-          <div class="card-header">
-            <h3>User Statistics</h3>
-          </div>
-          <div class="card-content">
-            <div class="user-stats">
-              <div class="user-stat-item">
-                <div class="stat-icon">👥</div>
-                <div class="stat-info">
-                  <div class="stat-number" id="total-users">0</div>
-                  <div class="stat-label">Total Users</div>
-                </div>
-              </div>
-              <div class="user-stat-item">
-                <div class="stat-icon">🟢</div>
-                <div class="stat-info">
-                  <div class="stat-number" id="active-users-count">0</div>
-                  <div class="stat-label">Active Users</div>
-                </div>
-              </div>
-              <div class="user-stat-item">
-                <div class="stat-icon">👤</div>
-                <div class="stat-info">
-                  <div class="stat-number" id="staff-users">0</div>
-                  <div class="stat-label">Staff Members</div>
-                </div>
-              </div>
-              <div class="user-stat-item">
-                <div class="stat-icon">👑</div>
-                <div class="stat-info">
-                  <div class="stat-number" id="admin-users">1</div>
-                  <div class="stat-label">Administrators</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <div class="card-header">
-            <h3>Coming Soon Features</h3>
-          </div>
-          <div class="card-content">
-            <div class="feature-list">
-              <div class="feature-item">
-                <div class="feature-icon">👀</div>
-                <div class="feature-text">View all registered users</div>
-                <div class="feature-status">In Development</div>
-              </div>
-              <div class="feature-item">
-                <div class="feature-icon">✏️</div>
-                <div class="feature-text">Edit user permissions</div>
-                <div class="feature-status">Planned</div>
-              </div>
-              <div class="feature-item">
-                <div class="feature-icon">🔒</div>
-                <div class="feature-text">Deactivate/activate accounts</div>
-                <div class="feature-status">Planned</div>
-              </div>
-              <div class="feature-item">
-                <div class="feature-icon">📊</div>
-                <div class="feature-text">Generate user reports</div>
-                <div class="feature-status">Planned</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <div class="card-header">
-            <h3>Quick Actions</h3>
-          </div>
-          <div class="card-content">
-            <div class="user-quick-actions">
-              <button class="action-btn" onclick="alert('Feature coming soon!')">
-                <span class="action-icon">👥</span>
-                View All Users
-              </button>
-              <button class="action-btn" onclick="alert('Feature coming soon!')">
-                <span class="action-icon">📊</span>
-                User Activity Report
-              </button>
-              <button class="action-btn" onclick="alert('Feature coming soon!')">
-                <span class="action-icon">⚙️</span>
-                System Settings
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <button class="btn btn-secondary" onclick="showSection('admin-dashboard')">
+        Back to Dashboard
+      </button>
     </section>
 
     <script>
@@ -1673,65 +1050,7 @@ mysqli_close($link);
     // Check session on page load
     document.addEventListener('DOMContentLoaded', function() {
         checkUserSession();
-        initializeFormHandlers();
     });
-
-    // Initialize form handlers
-    function initializeFormHandlers() {
-        // Character counter for complaint description
-        const complaintDesc = document.getElementById('complaint-description');
-        const charCount = document.getElementById('char-count');
-        
-        if (complaintDesc && charCount) {
-            complaintDesc.addEventListener('input', function() {
-                const count = this.value.length;
-                charCount.textContent = count;
-                
-                // Change color based on length
-                if (count > 900) {
-                    charCount.style.color = 'var(--danger)';
-                } else if (count > 700) {
-                    charCount.style.color = 'var(--warning)';
-                } else {
-                    charCount.style.color = 'var(--gray-500)';
-                }
-            });
-        }
-
-        // File upload preview
-        const fileInput = document.getElementById('complaint-attachment');
-        const filePreview = document.getElementById('file-preview');
-        
-        if (fileInput && filePreview) {
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        filePreview.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <img src="${e.target.result}" alt="Preview" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                                <div>
-                                    <div style="font-weight: 600; font-size: 0.875rem;">${file.name}</div>
-                                    <div style="color: var(--gray-500); font-size: 0.75rem;">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
-                                </div>
-                                <button type="button" onclick="clearFileUpload()" style="background: var(--danger); color: white; border: none; border-radius: 4px; padding: 0.5rem; cursor: pointer;">×</button>
-                            </div>
-                        `;
-                        filePreview.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    }
-
-    // Clear file upload
-    function clearFileUpload() {
-        document.getElementById('complaint-attachment').value = '';
-        document.getElementById('file-preview').classList.add('hidden');
-        document.getElementById('file-preview').innerHTML = '';
-    }
 
     // Quick admin login function
     function quickAdminLogin() {
@@ -1785,48 +1104,6 @@ mysqli_close($link);
         }
     }
 
-    // Show user interface
-    function showUserInterface() {
-        updateUserInfo();
-        showSection('dashboard');
-    }
-
-    // Show admin interface
-    function showAdminInterface() {
-        updateAdminInfo();
-        showSection('admin-dashboard');
-    }
-
-    // Update user info in sidebar
-    function updateUserInfo() {
-        if (currentUser) {
-            const userNameEl = document.getElementById('sidebar-user-name');
-            const userRoleEl = document.getElementById('sidebar-user-role');
-            const userInitialsEl = document.getElementById('user-initials');
-            
-            if (userNameEl) userNameEl.textContent = currentUser.full_name || 'User';
-            if (userRoleEl) userRoleEl.textContent = currentUser.role || 'Staff';
-            if (userInitialsEl) {
-                const initials = (currentUser.full_name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                userInitialsEl.textContent = initials;
-            }
-        }
-    }
-
-    // Update admin info in sidebar
-    function updateAdminInfo() {
-        if (currentUser) {
-            const adminNameEl = document.getElementById('admin-sidebar-name');
-            const adminInitialsEl = document.getElementById('admin-initials');
-            
-            if (adminNameEl) adminNameEl.textContent = currentUser.full_name || 'Administrator';
-            if (adminInitialsEl) {
-                const initials = (currentUser.full_name || 'A').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                adminInitialsEl.textContent = initials;
-            }
-        }
-    }
-
     // Show message function
     function showMessage(message, type = 'success') {
         // Remove existing messages
@@ -1841,37 +1118,32 @@ mysqli_close($link);
             top: 20px;
             right: 20px;
             padding: 15px 20px;
-            border-radius: 8px;
+            border-radius: 5px;
             color: white;
-            font-weight: 600;
-            z-index: 1100;
+            font-weight: bold;
+            z-index: 1000;
             max-width: 300px;
             word-wrap: break-word;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            animation: slideInFromRight 0.3s ease-out;
             ${type === 'success' ? 'background-color: #10b981;' : 'background-color: #ef4444;'}
         `;
 
         document.body.appendChild(messageDiv);
 
         setTimeout(() => {
-            messageDiv.style.animation = 'slideInFromRight 0.3s ease-out reverse';
-            setTimeout(() => messageDiv.remove(), 300);
-        }, 4000);
+            messageDiv.remove();
+        }, 5000);
     }
 
     // Show section function
     function showSection(sectionName) {
         // Hide all sections
-        const sections = document.querySelectorAll('.content-section, .auth-section');
+        const sections = document.querySelectorAll('.section, .auth-section');
         sections.forEach(section => {
             section.classList.add('hidden');
         });
 
-        // Hide all sidebars and main content initially
-        document.getElementById('main-sidebar')?.classList.add('hidden');
-        document.getElementById('admin-sidebar')?.classList.add('hidden');
-        document.getElementById('main-content')?.classList.add('hidden');
+        // Hide navbar initially
+        document.getElementById('main-navbar').classList.add('hidden');
 
         // Show requested section
         const targetSection = document.getElementById(sectionName + '-section');
@@ -1879,33 +1151,15 @@ mysqli_close($link);
             targetSection.classList.remove('hidden');
         }
 
-        // Determine which interface to show
+        // Show navbar for staff sections only (not admin sections)
         const staffSections = ['dashboard', 'file-complaint', 'complaint-list', 'complaint-details', 'profile'];
         const adminSections = ['admin-dashboard', 'admin-complaints', 'admin-users'];
         
         if (staffSections.includes(sectionName)) {
-            // Show staff sidebar and main content
-            document.getElementById('main-sidebar')?.classList.remove('hidden');
-            document.getElementById('main-content')?.classList.remove('hidden');
-            
-            // Update active nav item
-            document.querySelectorAll('#main-sidebar .nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.section === sectionName) {
-                    item.classList.add('active');
-                }
-            });
+            document.getElementById('main-navbar').classList.remove('hidden');
         } else if (adminSections.includes(sectionName)) {
-            // Show admin sidebar for admin sections
-            document.getElementById('admin-sidebar')?.classList.remove('hidden');
-            
-            // Update active nav item
-            document.querySelectorAll('#admin-sidebar .nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.section === sectionName) {
-                    item.classList.add('active');
-                }
-            });
+            // Keep navbar hidden for admin sections since they have their own navigation
+            document.getElementById('main-navbar').classList.add('hidden');
         }
 
         // Load section-specific data
@@ -2272,53 +1526,6 @@ mysqli_close($link);
             document.querySelectorAll('form').forEach(form => form.reset());
         }
     }
-
-    // Additional utility functions for the new layout
-    function generateReport() {
-        showMessage('Report generation feature coming soon!', 'info');
-    }
-
-    function exportComplaints() {
-        showMessage('Export feature coming soon!', 'info');
-    }
-
-    function filterComplaints(status) {
-        // Update active filter tab
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.dataset.filter === status) {
-                tab.classList.add('active');
-            }
-        });
-        
-        // Filter logic will be implemented when loading complaints
-        loadComplaints(status);
-    }
-
-    function filterAdminComplaints(status) {
-        // Update active filter tab
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.dataset.filter === status) {
-                tab.classList.add('active');
-            }
-        });
-        
-        // Filter logic will be implemented when loading admin complaints
-        loadAdminComplaints(status);
-    }
-
-    // Search functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInputs = document.querySelectorAll('.search-input');
-        searchInputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                // Search logic will be implemented based on the current section
-                console.log('Searching for:', searchTerm);
-            });
-        });
-    });
     </script>
   </body>
 </html>
