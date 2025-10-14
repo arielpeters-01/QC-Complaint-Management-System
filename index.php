@@ -6,74 +6,13 @@ define('DB_SERVER','localhost');
 define('DB_USERNAME','root');
 define('DB_PASSWORD','');
 define('DB_NAME','qc_complaint_management_system'); // Removed spaces
-$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
+$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 // Check connection
 if($link === false){
     die("ERROR: Could not connect. " . mysqli_connect_error());
 }
 
-// Create database if it doesn't exist
-$create_db = "CREATE DATABASE IF NOT EXISTS " . DB_NAME;
-if(!mysqli_query($link, $create_db)) {
-    die("ERROR: Could not create database. " . mysqli_error($link));
-}
-
-// Select database
-mysqli_select_db($link, DB_NAME);
-
-// Create tables if they don't exist
-$create_users_table = "
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('staff', 'admin') DEFAULT 'staff',
-    phone VARCHAR(20) DEFAULT NULL,
-    position VARCHAR(100) DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)";
-
-$create_complaints_table = "
-CREATE TABLE IF NOT EXISTS complaints (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    category VARCHAR(100) NOT NULL,
-    description TEXT NOT NULL,
-    attachment VARCHAR(255) DEFAULT NULL,
-    status ENUM('pending', 'in-progress', 'resolved') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-)";
-
-$create_comments_table = "
-CREATE TABLE IF NOT EXISTS comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    complaint_id INT NOT NULL,
-    user_id INT NOT NULL,
-    comment TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (complaint_id) REFERENCES complaints(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-)";
-
-// Execute table creation queries
-if(!mysqli_query($link, $create_users_table)) {
-    die("ERROR: Could not create users table. " . mysqli_error($link));
-}
-
-if(!mysqli_query($link, $create_complaints_table)) {
-    die("ERROR: Could not create complaints table. " . mysqli_error($link));
-}
-
-if(!mysqli_query($link, $create_comments_table)) {
-    die("ERROR: Could not create comments table. " . mysqli_error($link));
-}
 
 // Create default admin user if not exists
 $admin_check = "SELECT id FROM users WHERE email = 'admin@qcexpress.com'";
